@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Results</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .add-button,
+        .remove-button {
+            cursor: pointer;
+            margin: 5px;
+            padding: 5px;
+            border: 1px solid #000;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Extracted Units</h2>
+    <div id="unitPlan"></div>
+
+    <script>
+        var units = {{ units| safe }};
+        var numCOs = {{ n| safe }};
+        var unitPlanDiv = document.getElementById('unitPlan');
+
+        Object.keys(units).forEach((unit, index) => {
+            let d = document.createElement('div');
+            d.setAttribute('class', 'unit-section');
+            let tb = document.createElement('table');
+            tb.setAttribute('border', '1');
+            tb.setAttribute('class', 'dytab');
+            tb.setAttribute('id', "tb" + index);
+
+            let thead = document.createElement('thead');
+            let headerRow = document.createElement('tr');
+            ["Sno", "Integrated Learning Outcomes", "Knowledge Level of ILO", "No of Hours Required", "Pedagogy", "Teaching Aids"].forEach(text => {
+                let th = document.createElement('th');
+                th.innerHTML = text;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            tb.appendChild(thead);
+
+            let tbody = document.createElement('tbody');
+            units[unit]["Syllabus"].forEach((topic, topicIndex) => {
+                let tr = document.createElement('tr');
+                tr.setAttribute('id', 'unit' + index + 'trm' + (topicIndex + 1));
+
+                let td1 = document.createElement('td');
+                td1.innerHTML = topicIndex + 1;
+
+                let td2 = document.createElement('td');
+                let inputTopic = document.createElement('input');
+                inputTopic.setAttribute('type', 'text');
+                inputTopic.setAttribute('value', topic);
+                td2.appendChild(inputTopic);
+
+                let td3 = document.createElement('td');
+                let selectCO = document.createElement('select');
+                for (let i = 1; i <= numCOs; i++) {
+                    let option = document.createElement('option');
+                    option.setAttribute('value', 'K' + i);
+                    option.innerHTML = 'K' + i;
+                    selectCO.appendChild(option);
+                }
+                td3.appendChild(selectCO);
+
+                let td4 = document.createElement('td');
+                let td5 = document.createElement('td');
+                let td6 = document.createElement('td');
+                [td4, td5, td6].forEach(td => {
+                    let input = document.createElement('input');
+                    td.appendChild(input);
+                });
+
+                tr.append(td1, td2, td3, td4, td5, td6);
+                tbody.appendChild(tr);
+            });
+            tb.appendChild(tbody);
+            d.appendChild(tb);
+
+            let addButton = document.createElement('div');
+            addButton.setAttribute('class', 'add-button');
+            addButton.setAttribute('id', 'add' + index);
+            addButton.innerHTML = "+ADD";
+            addButton.addEventListener("click", buttonPressed);
+
+            let removeButton = document.createElement('div');
+            removeButton.setAttribute('class', 'remove-button');
+            removeButton.setAttribute('id', 'rm' + index);
+            removeButton.innerHTML = "-REMOVE";
+            removeButton.addEventListener("click", rmpressed);
+
+            d.append(addButton, removeButton);
+            unitPlanDiv.appendChild(d);
+        });
+
+        function buttonPressed(e) {
+            let num = e.target.id.replace('add', '');
+            let tb = document.getElementById("tb" + num);
+            let rowCount = tb.rows.length;
+            let tr = document.createElement('tr');
+
+            let td1 = document.createElement('td');
+            td1.innerHTML = rowCount;
+
+            let td2 = document.createElement('td');
+            let inputTopic = document.createElement('input');
+            td2.appendChild(inputTopic);
+
+            let td3 = document.createElement('td');
+            let selectCO = document.createElement('select');
+            for (let i = 1; i <= numCOs; i++) {
+                let option = document.createElement('option');
+                option.setAttribute('value', 'K' + i);
+                option.innerHTML = 'K' + i;
+                selectCO.appendChild(option);
+            }
+            td3.appendChild(selectCO);
+
+            let td4 = document.createElement('td');
+            let td5 = document.createElement('td');
+            let td6 = document.createElement('td');
+            [td4, td5, td6].forEach(td => {
+                let input = document.createElement('input');
+                td.appendChild(input);
+            });
+
+            tr.append(td1, td2, td3, td4, td5, td6);
+            tb.appendChild(tr);
+        }
+
+        function rmpressed(e) {
+            let num = e.target.id.replace('rm', '');
+            let tb = document.getElementById("tb" + num);
+            if (tb.rows.length > 1) {
+                tb.deleteRow(-1);
+            } else {
+                alert("At least one row is mandatory");
+            }
+        }
+    </script>
+</body>
+
+</html>

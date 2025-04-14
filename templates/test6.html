@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Results</title>
+</head>
+
+<body class="bg-gray-100 p-6">
+    <form action="mainpage/storeinput" method="POST" class="bg-white p-6 shadow-md rounded-md">
+        {% csrf_token %}
+        <div id="lesson_plan_details">
+            <table class="w-full border-collapse border border-gray-300">
+                <tr>
+                    <td class="p-2 font-semibold">Batch:<span class="text-red-500">*</span></td>
+                    <td><input type="text" name="batch" id="batch" class="w-full p-2 border rounded-md" required></td>
+                </tr>
+                <tr>
+                    <td class="p-2 font-semibold">Academic Year:<span class="text-red-500">*</span></td>
+                    <td><input type="text" name="academicyear" id="academicyear" class="w-full p-2 border rounded-md"
+                            required></td>
+                    <td class="p-2 font-semibold">Programme:<span class="text-red-500">*</span></td>
+                    <td><input type="text" name="programme" id="programme" class="w-full p-2 border rounded-md"
+                            required></td>
+                </tr>
+                <tr>
+                    <td class="p-2 font-semibold">Semester:<span class="text-red-500">*</span></td>
+                    <td>
+                        <input type="text" name="semester" id="semester" list="sem" class="w-full p-2 border rounded-md"
+                            required>
+                        <datalist id="sem">
+                            <option value="I Sem"></option>
+                            <option value="II Sem"></option>
+                            <option value="III Sem"></option>
+                            <option value="IV Sem"></option>
+                            <option value="V Sem"></option>
+                            <option value="VI Sem"></option>
+                        </datalist>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="p-2 font-semibold">Name of the course:<span class="text-red-500">*</span></td>
+                    <td><input type="text" name="nameofthecourse" id="nameofthecourse"
+                            class="w-full p-2 border rounded-md" required></td>
+                    <td class="p-2 font-semibold">Course Code:<span class="text-red-500">*</span></td>
+                    <td><input type="text" name="coursecode" id="coursecode" class="w-full p-2 border rounded-md"
+                            required></td>
+                </tr>
+            </table>
+        </div>
+        <h2 class="text-xl font-bold mt-4">Course Outcomes</h2>
+        <div id="courseOutcomes"></div>
+        <h1 class="text-lg font-bold mt-4">TextBooks</h1>
+        <table class="w-full border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="border p-2">S.no</th>
+                    <th class="border p-2">Name & details of the textbook<span class="text-red-500">*</span></th>
+                </tr>
+            </thead>
+            <tr>
+                <td class="border p-2">1</td>
+                <td class="border p-2"><input type="text" class="w-full p-2 border rounded-md" name="tb1"></td>
+            </tr>
+        </table>
+        <div class="flex gap-2 mt-2">
+            <button type="button" onclick="textbook()" class="bg-green-500 text-white px-4 py-2 rounded">+ADD</button>
+            <button type="button" onclick="rmtb()" class="bg-red-500 text-white px-4 py-2 rounded">REMOVE</button>
+        </div>
+        <h1 class="text-lg font-bold mt-4">Reference Books</h1>
+        <table class="w-full border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="border p-2">S.no</th>
+                    <th class="border p-2">Name & details of the ReferenceBook<span class="text-red-500">*</span></th>
+                </tr>
+            </thead>
+            <tr>
+                <td class="border p-2">1</td>
+                <td class="border p-2"><input type="text" class="w-full p-2 border rounded-md" name="rb1"></td>
+            </tr>
+        </table>
+        <div class="flex gap-2 mt-2">
+            <button type="button" onclick="referencebook()"
+                class="bg-green-500 text-white px-4 py-2 rounded">+ADD</button>
+            <button type="button" onclick="rmrb()" class="bg-red-500 text-white px-4 py-2 rounded">REMOVE</button>
+        </div>
+        <h1 class="text-lg font-bold mt-4">CO-PO & CO-PSO Matrix</h1>
+        <table class="w-full border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="border p-2">Cos/Pos,Psos</th>
+                    <th class="border p-2">PO1<span class="text-red-500">*</span></th>
+                    <th class="border p-2">PO2<span class="text-red-500">*</span></th>
+                    <th class="border p-2">PO3<span class="text-red-500">*</span></th>
+                </tr>
+            </thead>
+        </table>
+        <h1 class="text-lg font-bold mt-4">Details of Course Instructor</h1>
+        <div id="maindiv"></div>
+        <div class="text-center mt-4">
+            <button type="submit" name="submit" id="submitl"
+                class="bg-blue-500 text-white px-6 py-2 rounded">Submit</button>
+        </div>
+    </form>
+</body>
+
+</html>

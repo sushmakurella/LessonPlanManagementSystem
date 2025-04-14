@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Results</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .adding_button,
+        .remove_button {
+            cursor: pointer;
+            margin: 5px;
+            padding: 5px;
+            border: 1px solid #000;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Extracted Units</h2>
+    <div id="unitPlan"></div>
+    <script>
+        var lst_tb = [], lst_tb_count = [];
+        var units = {{ units| safe }};
+        var numCOs = {{ n| safe }};
+        var unitPlanDiv = document.getElementById('unitPlan');
+
+        Object.keys(units).forEach((unit, index) => {
+            let d = document.createElement('div');
+            d.setAttribute('class', 'unit-section');
+            let tb = document.createElement('table');
+            tb.setAttribute('border', '1');
+            tb.setAttribute('class', 'dytab');
+            tb.setAttribute('id', 'tb' + index);
+            lst_tb.push('tb' + index);
+
+            let syllabusLength = units[unit]["Syllabus"].length;
+            lst_tb_count.push(syllabusLength);
+
+            let inputHidden = document.createElement('input');
+            inputHidden.setAttribute('type', 'hidden');
+            inputHidden.setAttribute('name', 'tempinp' + (index + 1));
+            inputHidden.setAttribute('value', syllabusLength);
+            inputHidden.setAttribute('id', 'tempinp' + (index + 1));
+            d.appendChild(inputHidden);
+
+            let thead = document.createElement('thead');
+            let headerRow = document.createElement('tr');
+            ["Sno", "Integrated Learning Outcomes", "Knowledge Level of ILO", "No of Hours Required", "Pedagogy", "Teaching Aids"].forEach(text => {
+                let th = document.createElement('th');
+                th.innerHTML = text;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            tb.appendChild(thead);
+
+            let tbody = document.createElement('tbody');
+            units[unit]["Syllabus"].forEach((topic, topicIndex) => {
+                let tr = document.createElement('tr');
+                tr.setAttribute('id', 'row' + index + (topicIndex + 1));
+
+                let td1 = document.createElement('td');
+                td1.innerHTML = topicIndex + 1;
+                let td2 = document.createElement('td');
+                let inputTopic = document.createElement('input');
+                inputTopic.setAttribute('type', 'text');
+                inputTopic.setAttribute('value', topic);
+                td2.appendChild(inputTopic);
+
+                tr.append(td1, td2);
+                tbody.appendChild(tr);
+            });
+            tb.appendChild(tbody);
+            d.appendChild(tb);
+
+            let addButton = document.createElement('div');
+            addButton.setAttribute('class', 'adding_button');
+            addButton.setAttribute('id', 'add' + index);
+            addButton.innerHTML = "+ADD";
+            addButton.addEventListener("click", addRow);
+
+            let removeButton = document.createElement('div');
+            removeButton.setAttribute('class', 'remove_button');
+            removeButton.setAttribute('id', 'remove' + index);
+            removeButton.innerHTML = "-REMOVE";
+            removeButton.addEventListener("click", removeRow);
+
+            d.append(addButton, removeButton);
+            unitPlanDiv.appendChild(d);
+        });
+
+        function addRow(e) {
+            let num = e.target.id.replace('add', '');
+            let tb = document.getElementById(lst_tb[num]);
+            let rowCount = ++lst_tb_count[num];
+            let tbody = tb.getElementsByTagName('tbody')[0];
+
+            let tr = document.createElement('tr');
+            tr.setAttribute('id', 'row' + num + rowCount);
+
+            let td1 = document.createElement('td');
+            td1.innerHTML = rowCount;
+            let td2 = document.createElement('td');
+            let inputTopic = document.createElement('input');
+            inputTopic.setAttribute('type', 'text');
+            td2.appendChild(inputTopic);
+
+            tr.append(td1, td2);
+            tbody.appendChild(tr);
+
+            document.getElementById('tempinp' + (parseInt(num) + 1)).value = rowCount;
+        }
+
+        function removeRow(e) {
+            let num = e.target.id.replace('remove', '');
+            let tb = document.getElementById(lst_tb[num]);
+            let tbody = tb.getElementsByTagName('tbody')[0];
+            if (lst_tb_count[num] > 1) {
+                tbody.removeChild(tbody.lastChild);
+                lst_tb_count[num]--;
+                document.getElementById('tempinp' + (parseInt(num) + 1)).value = lst_tb_count[num];
+            } else {
+                alert("At least one row is mandatory");
+            }
+        }
+    </script>
+</body>
+
+</html>

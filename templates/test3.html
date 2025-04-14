@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extracted Results</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .adding_button,
+        .remove_button {
+            cursor: pointer;
+            margin: 5px;
+            padding: 5px;
+            border: 1px solid #000;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Extracted Units</h2>
+    <div id="unitPlan"></div>
+    <script>
+        var lst_id = [], lst_rm = [], lst_tb = [], lst_tb_count = [], lst_tempinp = [];
+        var lessonplantb = "tb", tr_co = 'tr', ilo = 'ilo', knilo = 'knilo', nfhr = 'nfhr', pedagody = 'pedgy', teachaids = 'tds';
+
+        var units = {{ units| safe }};
+        var numCOs = {{ n| safe }};
+        var unitPlanDiv = document.getElementById('unitPlan');
+
+        Object.keys(units).forEach((unit, index) => {
+            let d = document.createElement('div');
+            d.setAttribute('class', 'unit-section');
+            let tb = document.createElement('table');
+            tb.setAttribute('border', '1');
+            tb.setAttribute('class', 'dytab');
+            tb.setAttribute('id', lessonplantb + index);
+            lst_tb.push(lessonplantb + index);
+
+            let syllabusLength = units[unit]["Syllabus"].length; // Get the number of existing topics
+            lst_tb_count.push(syllabusLength); // Set initial count correctly
+
+            let thead = document.createElement('thead');
+            let headerRow = document.createElement('tr');
+            ["Sno", "Integrated Learning Outcomes", "Knowledge Level of ILO", "No of Hours Required", "Pedagogy", "Teaching Aids"].forEach(text => {
+                let th = document.createElement('th');
+                th.innerHTML = text;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            tb.appendChild(thead);
+
+            let tbody = document.createElement('tbody');
+            units[unit]["Syllabus"].forEach((topic, topicIndex) => {
+                let tr = document.createElement('tr');
+                tr.setAttribute('id', tr_co + index + 'trm' + (topicIndex + 1));
+
+                let td1 = document.createElement('td');
+                td1.innerHTML = topicIndex + 1;
+
+                let td2 = document.createElement('td');
+                let inputTopic = document.createElement('input');
+                inputTopic.setAttribute('name', 'co' + index + ilo + (topicIndex + 1));
+                inputTopic.setAttribute('type', 'text');
+                inputTopic.setAttribute('value', topic);
+                td2.appendChild(inputTopic);
+
+                let td3 = document.createElement('td');
+                let selectCO = document.createElement('select');
+                for (let i = 1; i <= numCOs; i++) {
+                    let option = document.createElement('option');
+                    option.setAttribute('value', 'K' + i);
+                    option.innerHTML = 'K' + i;
+                    selectCO.appendChild(option);
+                }
+                selectCO.setAttribute('name', 'co' + index + knilo + (topicIndex + 1));
+                td3.appendChild(selectCO);
+
+                let td4 = document.createElement('td');
+                let td5 = document.createElement('td');
+                let td6 = document.createElement('td');
+                [td4, td5, td6].forEach((td, i) => {
+                    let input = document.createElement('input');
+                    input.setAttribute('name', 'co' + index + [nfhr, pedagody, teachaids][i] + (topicIndex + 1));
+                    td.appendChild(input);
+                });
+
+                tr.append(td1, td2, td3, td4, td5, td6);
+                tbody.appendChild(tr);
+            });
+            tb.appendChild(tbody);
+            d.appendChild(tb);
+
+            let addButton = document.createElement('div');
+            addButton.setAttribute('class', 'adding_button');
+            addButton.setAttribute('id', 'id' + index);
+            addButton.innerHTML = "+ADD";
+            addButton.addEventListener("click", buttonPressed);
+
+            let removeButton = document.createElement('div');
+            removeButton.setAttribute('class', 'remove_button');
+            removeButton.setAttribute('id', 'rm' + index);
+            removeButton.innerHTML = "-REMOVE";
+            removeButton.addEventListener("click", rmpressed);
+
+            d.append(addButton, removeButton);
+            unitPlanDiv.appendChild(d);
+        });
+
+        function buttonPressed(e) {
+            let num = e.target.id.replace('id', '');
+            let tb = document.getElementById(lst_tb[num]);
+
+            let rowCount = ++lst_tb_count[num]; // Increment row count properly
+            let tr = document.createElement('tr');
+            tr.setAttribute('id', tr_co + num + 'trm' + rowCount);
+
+            let td1 = document.createElement('td');
+            td1.innerHTML = rowCount;
+
+            let td2 = document.createElement('td');
+            let inputTopic = document.createElement('input');
+            inputTopic.setAttribute('name', 'co' + num + ilo + rowCount);
+            td2.appendChild(inputTopic);
+
+            let td3 = document.createElement('td');
+            let selectCO = document.createElement('select');
+            for (let i = 1; i <= numCOs; i++) {
+                let option = document.createElement('option');
+                option.setAttribute('value', 'K' + i);
+                option.innerHTML = 'K' + i;
+                selectCO.appendChild(option);
+            }
+            selectCO.setAttribute('name', 'co' + num + knilo + rowCount);
+            td3.appendChild(selectCO);
+
+            let td4 = document.createElement('td');
+            let td5 = document.createElement('td');
+            let td6 = document.createElement('td');
+            [td4, td5, td6].forEach((td, i) => {
+                let input = document.createElement('input');
+                input.setAttribute('name', 'co' + num + [nfhr, pedagody, teachaids][i] + rowCount);
+                td.appendChild(input);
+            });
+
+            tr.append(td1, td2, td3, td4, td5, td6);
+            tb.appendChild(tr);
+        }
+
+        function rmpressed(e) {
+            let num = e.target.id.replace('rm', '');
+            let tb = document.getElementById(lst_tb[num]);
+            if (lst_tb_count[num] > 1) {
+                tb.deleteRow(-1);
+                lst_tb_count[num]--;
+            } else {
+                alert("At least one row is mandatory");
+            }
+        }
+    </script>
+
+</body>
+
+</html>
